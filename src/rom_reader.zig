@@ -1,34 +1,39 @@
 const std = @import("std");
 const opcodes = @import("opcodes.zig");
 const dataview = @import("dataview.zig");
+const instruction = @import("instruction.zig");
+
+const Instruction = instruction.Instruction;
 const io = std.io;
 const read_only = std.fs.File.OpenMode.read_only;
 
 pub fn getByteBufferFromFile(fileName: []const u8) ![]u8 {
-    const file = try std.fs.cwd().openFile(fileName, .{.mode = read_only});
+    const file = try std.fs.cwd().openFile(fileName, .{ .mode = read_only });
     defer file.close();
-
+    
     const reader = file.reader();
     var buffer: [4096]u8 = undefined;
-    const size:usize = try reader.read(buffer[0..]);
+    const size: usize = try reader.read(buffer[0..]);
     std.debug.print("Read:{} Bytes\n", .{size});
     return buffer[0..size];
 }
 
-pub fn getOpCodes(buffer:[]u8) []u16 {
+// Provides the strange bit positioning nececary
+pub fn rotateBufferBits(buffer: []u8) []u16 {
     var res = @bitCast([]u16, buffer);
-    res.len = buffer.len/2;
-    for(res) |val, i| {
+    res.len /= 2; // len / 2 since bytelength is double for each value;
+    for (res) |val, i| {
+        // Bitshifting magic
         res[i] = std.math.rotl(u16, val, 8);
     }
     return res;
 }
 
-pub fn printOpCodes(buffer:[]u16) void {
-    for(buffer) |val, i| {
-        if(i % 4 == 0) std.debug.print("\n", .{});
-        const opcode = opcodes.getOpcode(val);
-        std.debug.print("{X} ", .{opcode});
-        std.debug.print("{X} ", .{dataview.getOpcodeDataViewType(opcode)});
+pub fn getInstructionBuffer(raw_opcodes: []u16) ![]Instruction {
+    const instructionBuffer:[]Instruction = try std.heap.page_allocator.alloc(Instruction, raw_opcodes.len);
+    errdefer std.heap.page_allocator.free(instructionBuffer);
+    for (raw_opcodes) |code, i| {
+        instructionBuffer[i] = instruction.createInstruction(code);
     }
+    return instructionBuffer;
 }
