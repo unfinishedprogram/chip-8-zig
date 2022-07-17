@@ -2,16 +2,9 @@ const RegisterLocations = enum { V0, V1, V2, V3, V4, V5, V6, V7, V8, V9, VA, VB,
 
 const system_memory: [4096]u8 = undefined;
 
-const address_register: u12 = 0; //  Named I
+const address_register: u12 = 0;
 
 const data_registers: [16]u8 = undefined;
 
 const sound_timer: u32 = 0;
 const delay_timer: u32 = 0;
-
-
-
-// TODO Keyboard 16 keys,
-// Idea use u16 and bitwise
-
-// TODO add stack,
