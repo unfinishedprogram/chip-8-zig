@@ -1,8 +1,8 @@
 const std = @import("std");
-
+const dataviews = @import("dataview.zig");
 const expectEqual = std.testing.expectEqual;
 
-const Opcode = enum {
+pub const Opcode = enum {
     @"0NNN", @"00E0", @"00EE", @"1NNN",
     @"2NNN", @"3XNN", @"4XNN", @"5XY0",
     @"6XNN", @"7XNN", @"8XY0", @"8XY1",
@@ -14,18 +14,11 @@ const Opcode = enum {
     @"FX33", @"FX55", @"FX65",
 };
 
-pub fn toU4Arr(value:u16) [4]u4 {
-    return .{
-        @truncate(u4, (value & 0xF000) >> 12),
-        @truncate(u4, (value & 0x0F00) >> 8),
-        @truncate(u4, (value & 0x00F0) >> 4),
-        @truncate(u4, (value & 0x000F)),
-    };
-}
 
 pub fn getOpcode(code:u16) Opcode {
-    const bytes = toU4Arr(code);
-    return switch (bytes[0]) {
+    const bytes = @bitCast(dataviews.D1, code);
+
+    return switch (bytes.a) {
         0x0 => switch(code) {
             0x00e0 => Opcode.@"00E0",
             0x00ee => Opcode.@"00EE",
@@ -38,7 +31,7 @@ pub fn getOpcode(code:u16) Opcode {
         0x5 => Opcode.@"5XY0",
         0x6 => Opcode.@"6XNN",
         0x7 => Opcode.@"7XNN",
-        0x8 => switch(bytes[3]) {
+        0x8 => switch(bytes.d) {
             0x0 => Opcode.@"8XY0",
             0x1 => Opcode.@"8XY1",
             0x2 => Opcode.@"8XY2",
@@ -55,18 +48,18 @@ pub fn getOpcode(code:u16) Opcode {
         0xb => Opcode.@"BNNN",
         0xc => Opcode.@"CXNN",
         0xd => Opcode.@"DXYN",
-        0xe => switch(bytes[3]) {
+        0xe => switch(bytes.d) {
             0x1 => Opcode.@"EXA1",
             0xe => Opcode.@"EX9E",
             else => unreachable,
         },
-        0xf => switch(bytes[2]) {
-            0x0 => switch(bytes[3]) {
+        0xf => switch(bytes.c) {
+            0x0 => switch(bytes.d) {
                 0x7 => Opcode.@"FX07",
                 0xa => Opcode.@"FX0A",
                 else => unreachable,
             },
-            0x1 => switch(bytes[3]) {
+            0x1 => switch(bytes.d) {
                 0x5 => Opcode.@"FX15",
                 0x8 => Opcode.@"FX18",
                 0xe => Opcode.@"FX1E",

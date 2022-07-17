@@ -1,12 +1,13 @@
 const std = @import("std");
 const opcodes = @import("opcodes.zig");
+const dataview = @import("dataview.zig");
 const io = std.io;
 const read_only = std.fs.File.OpenMode.read_only;
 
 pub fn getByteBufferFromFile(fileName: []const u8) ![]u8 {
     const file = try std.fs.cwd().openFile(fileName, .{.mode = read_only});
     defer file.close();
-    
+
     const reader = file.reader();
     var buffer: [4096]u8 = undefined;
     const size:usize = try reader.read(buffer[0..]);
@@ -26,7 +27,8 @@ pub fn getOpCodes(buffer:[]u8) []u16 {
 pub fn printOpCodes(buffer:[]u16) void {
     for(buffer) |val, i| {
         if(i % 4 == 0) std.debug.print("\n", .{});
-        std.debug.print("{X:0>4} ", .{(opcodes.getOpcode(val))});
-    
+        const opcode = opcodes.getOpcode(val);
+        std.debug.print("{X} ", .{opcode});
+        std.debug.print("{X} ", .{dataview.getOpcodeDataViewType(opcode)});
     }
 }
