@@ -12,7 +12,6 @@ const ExecutionContext = execution_context.ExecutionContext;
 pub fn executeInstruction(ctx:*ExecutionContext, instruction:Instruction) !void {
     print("Executing Instruction", .{});
     const d1 = @bitCast(dv.D1, instruction.data);
-    // const d2 = @bitCast(dv.D2, instruction.data);
     const d1_2 = @bitCast(dv.D1_2, instruction.data);
     const d1_3 = @bitCast(dv.D1_3, instruction.data);
 
