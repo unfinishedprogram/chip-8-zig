@@ -1,54 +1,63 @@
 const std = @import("std");
-const Instruction = @import("instruction.zig").Instruction;
+const print = std.debug.print;
+
+const instructions = @import("instruction.zig");
+const Instruction = instructions.Instruction;
+const printInstruction = instructions.printInstruction;
+const createInstruction = instructions.createInstruction;
+
 const executeInstruction = @import("execute.zig").executeInstruction;
 const expectEqual = std.testing.expectEqual;
 
 pub const Stack = struct {
-    buffer:[48]u12 = undefined,
+    buffer:[12] u16 = undefined,
     counter: u16 = 0,
 
-    pub fn pop(self:*Stack) u12 {
+    pub fn pop(self:*Stack) u16 {
         self.counter -= 1;
         return self.buffer[self.counter];
     }
 
-    pub fn push(self:*Stack, value:u12) void {
+    pub fn push(self:*Stack, value:u16) void {
         self.buffer[self.counter] = value;
         self.counter+=1;
     }
 };
 
-pub const ExecutionContext = struct {
-    system_memory: [4096]u8,
-    adress_register: u12,
-    data_registers: [16]u8,
-    sound_timer: u32,
-    delay_timer: u32,
-    program_counter: u16,
-    stack:Stack,
-    i:u12,
-    program: *[]Instruction,
+// var memory: [4096]u8 = undefined;
 
-    pub fn loadProgram(self:*ExecutionContext,program: *[]Instruction) !void {
-        self.program = program;
+pub const ExecutionContext = struct {
+    system_memory:[4096]u8 = undefined, // Program is loaded after the frist 512 bytes
+    address_register: u12 = 0,
+    data_registers: [16]u8 = undefined,
+    sound_timer: u8 = 0,
+    delay_timer: u8 = 0,
+    program_counter: u16 = 0x200,
+    stack:Stack = Stack{},
+    i:u12 = 0,
+
+    pub fn loadProgramRom(self: *ExecutionContext, program: []u8) void {
+        for(program) |byte, i| {
+            self.system_memory[i + 0x200 ] = byte;
+        }
     }
 
     pub fn step(self: *ExecutionContext) !void {
-        executeInstruction(self, self.program[self.program_counter]);
-        self.program_counter += 1;
+        print("PC:{}\n", .{self.program_counter});
+
+        const instruction = createInstruction(.{
+            self.system_memory[self.program_counter], 
+            self.system_memory[self.program_counter+1]
+        });
+
+        try printInstruction(&instruction);
+        try executeInstruction(self, instruction);
     }
 };
 
 pub fn createExecutionContext() ExecutionContext {
-    return ExecutionContext {
-        .system_memory = undefined,
-        .address_register = 0,
-        .data_registers = undefined,
-        .sound_timer = 0,
-        .delay_timer = 0,
-    };
+    return ExecutionContext {};
 }
-
 
 test "stack datastructure" {
     var myStack = Stack{};

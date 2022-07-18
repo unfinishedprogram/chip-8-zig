@@ -4,36 +4,35 @@ const std = @import("std");
 
 const dv = @import("dataview.zig");
 
-const print = std.debug.print;
+const print = std.debug.print; 
 const Instruction = instructions.Instruction;
 const ExecutionContext = execution_context.ExecutionContext;
 
+var rng = std.rand.DefaultPrng.init(0);
 
 pub fn executeInstruction(ctx:*ExecutionContext, instruction:Instruction) !void {
-    print("Executing Instruction", .{});
     const d1 = @bitCast(dv.D1, instruction.data);
     const d1_2 = @bitCast(dv.D1_2, instruction.data);
     const d1_3 = @bitCast(dv.D1_3, instruction.data);
 
-
-    const reg = ctx.data_registers;
+    const reg = &ctx.data_registers;
     switch(instruction.opcode) {
-        .@"0NNN" => {}, // Noop for now
+        .@"0NNN" => {}, // Noop
         .@"00E0" => {}, // Clear Display
-        .@"00EE" => ctx.program_counter = ctx.stack.pop() - 1, // Returns from subroutine
-        .@"1NNN" => ctx.program_counter = d1_3.b - 1,
+        .@"00EE" => ctx.program_counter = ctx.stack.pop() - 2, // Returns from subroutine
+        .@"1NNN" => ctx.program_counter = d1_3.b - 2,
         .@"2NNN" => { // Calls subroutine at NNN
             ctx.stack.push(ctx.program_counter);
-            ctx.program_counter = d1_3.b - 1;
+            ctx.program_counter = d1_3.b - 2;
         },
         .@"3XNN" => { // Skips the next instruction if VX equals NN.
-            if(reg[d1_2.b] == d1_2.c) ctx.program_counter += 1;
+            if(reg[d1_2.b] == d1_2.c) ctx.program_counter += 2;
         },
         .@"4XNN" => { // Skips the next instruction if VX does not equal NN.
-            if(reg[d1_2.b] != d1_2.c) ctx.program_counter += 1;
+            if(reg[d1_2.b] != d1_2.c) ctx.program_counter += 2;
         },
-        .@"5XY0" => {
-            if(reg[d1_2.b] == reg[d1_2.c]) ctx.program_counter += 1;
+        .@"5XY0" => { 
+            if(reg[d1.b] == reg[d1.c]) ctx.program_counter += 2;
         },
         .@"6XNN" => reg[d1_2.b] = d1_2.c, // Sets VX to NN
         .@"7XNN" => reg[d1_2.b] += d1_2.c, // Adds NN to VX 
@@ -65,10 +64,10 @@ pub fn executeInstruction(ctx:*ExecutionContext, instruction:Instruction) !void 
             reg[0xF] = reg[d1.b] % 2; // Carry
             reg[d1.b] *= 2;
         },
-        .@"9XY0" => {if(reg[d1.b] == reg[d1.c]) ctx.program_counter += 1;},
-        .@"ANNN" => ctx.i = reg[d1_3.b],
+        .@"9XY0" => {if(reg[d1.b] == reg[d1.c]) ctx.program_counter += 2;},
+        .@"ANNN" => ctx.i = d1_3.b,
         .@"BNNN" => ctx.program_counter = ctx.i + reg[0x0] - 1, // Minus one because we always increment
-        .@"CXNN" => {}, // Random
+        .@"CXNN" => reg[d1_2.b] = rng.random().int(u8) & d1_2.c, // Random
         .@"DXYN" => {}, // Draw Sprite
         .@"EX9E" => {}, // Keyboard
         .@"EXA1" => {}, // Keyboard
@@ -80,17 +79,17 @@ pub fn executeInstruction(ctx:*ExecutionContext, instruction:Instruction) !void 
         .@"FX29" => {}, // Sprite digit stuff
         .@"FX33" => {}, // Store Decimal Representation in memory
         .@"FX55" => {
-            var i = 0;
+            var i:u8 = 0;
             while(i <= d1.b):(i+=1) {
                 ctx.system_memory[ctx.i + i] = reg[i];
             }
         }, 
         .@"FX65" => {
-            var i = 0;
+            var i:u8 = 0;
             while(i <= d1.b):(i+=1) {
                 reg[i] = ctx.system_memory[ctx.i + i];
             }
         },
     }
-    ctx.program_counter += 1;
+    ctx.program_counter += 2;
 }
