@@ -1,3 +1,6 @@
 zig-out
 zig-cache
 .vscode
+build
+*.old
+node_modules

@@ -8,9 +8,11 @@ const execution_context = @import("execution_context.zig");
 pub fn main() anyerror!void {
     const file_data_buffer = try rom_reader.getByteBufferFromFile("roms/maze.rom");
     var context = execution_context.createExecutionContext();
-    context.loadProgramRom(file_data_buffer);
-    var x:i32 = 10;
-    while(x > 0):(x-=1) {
-        try context.step();
-    }
+    context.loadProgramRom(file_data_buffer, file_data_buffer.len);
+    // var x:i32 = 100;
+
+    // while(x > 0):(x-=1) {
+    //     // execution_context.ExecutionContext.step(context);
+    //     context.step();
+    // }
 }

@@ -7,15 +7,14 @@ const Instruction = instruction.Instruction;
 const io = std.io;
 const read_only = std.fs.File.OpenMode.read_only;
 
-pub fn getByteBufferFromFile(fileName: []const u8) ![]u8 {
+pub fn getByteBufferFromFile(fileName: []const u8) !*[]const u8 {
     const file = try std.fs.cwd().openFile(fileName, .{ .mode = read_only });
     defer file.close();
-    
     const reader = file.reader();
     var buffer: [4096]u8 = undefined;
     const size: usize = try reader.read(buffer[0..]);
     std.debug.print("Read:{} Bytes\n", .{size});
-    return buffer[0..size];
+    return &buffer[0..size];
 }
 
 // Provides the strange bit positioning nececary

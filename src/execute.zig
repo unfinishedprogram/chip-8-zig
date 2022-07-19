@@ -4,13 +4,12 @@ const std = @import("std");
 
 const dv = @import("dataview.zig");
 
-const print = std.debug.print; 
 const Instruction = instructions.Instruction;
 const ExecutionContext = execution_context.ExecutionContext;
 
 var rng = std.rand.DefaultPrng.init(0);
 
-pub fn executeInstruction(ctx:*ExecutionContext, instruction:Instruction) !void {
+pub fn executeInstruction(ctx:*ExecutionContext, instruction:Instruction) void {
     const d1 = @bitCast(dv.D1, instruction.data);
     const d1_2 = @bitCast(dv.D1_2, instruction.data);
     const d1_3 = @bitCast(dv.D1_3, instruction.data);

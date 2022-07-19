@@ -1,6 +1,7 @@
 const std = @import("std");
 const opcodes = @import("opcodes.zig");
 const dataview = @import("dataview.zig");
+const jslogNum = @import("lib.zig").jslogNum;
 
 const Opcode = opcodes.Opcode;
 const print = std.debug.print;
