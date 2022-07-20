@@ -24,8 +24,8 @@ function initRomPicker(execution_ptr:number) {
         reader.onload = () => {
             const byteArray = new Uint8Array(reader.result as ArrayBuffer);
 
-            const display_ptr:number = ctx.getDisplayBuffer(execution_ptr);
-            const ptr:number = ctx.requestU8ArrBuffer(byteArray.length);
+            const display_ptr = ctx.getDisplayBuffer(execution_ptr);
+            const ptr = ctx.requestU8ArrBuffer(byteArray.length);
 
             const arr = new Uint8Array(ctx.memory.buffer, ptr, byteArray.length);
 
