@@ -2,6 +2,7 @@ const std = @import("std");
 const opcodes = @import("opcodes.zig");
 const dataview = @import("dataview.zig");
 const instruction = @import("instruction.zig");
+const allocator = @import("allocator.zig").allocator;
 
 const Instruction = instruction.Instruction;
 const io = std.io;
@@ -29,8 +30,8 @@ pub fn rotateBufferBits(buffer: []u8) []u16 {
 }
 
 pub fn getInstructionBuffer(raw_opcodes: []u16) ![]Instruction {
-    const instructionBuffer:[]Instruction = try std.heap.page_allocator.alloc(Instruction, raw_opcodes.len);
-    errdefer std.heap.page_allocator.free(instructionBuffer);
+    const instructionBuffer:[]Instruction = try allocator.alloc(Instruction, raw_opcodes.len);
+    errdefer allocator.free(instructionBuffer);
     for (raw_opcodes) |code, i| {
         instructionBuffer[i] = instruction.createInstruction(code);
     }

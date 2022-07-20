@@ -17,13 +17,6 @@ pub fn printInstruction(instruction: *const Instruction) !void {
     print("DT: {X}{X}{X}{X}\n\n", .{d.a, d.b, d.c, d.d});
 }
 
-// pub fn createInstruction(raw_opcode: u16) Instruction {
-//     return Instruction{
-//         .opcode = opcodes.getOpcode(raw_opcode),
-//         .data = raw_opcode,
-//     };
-// }
-
 pub fn createInstruction(bytes: [2]u8) Instruction {
     const raw_opcode:u16 = std.math.rotl(u16, @bitCast([1]u16, bytes)[0], 8);
     return Instruction{

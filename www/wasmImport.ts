@@ -6,6 +6,7 @@ export interface WasmCtx {
     step:CallableFunction,
     ping:CallableFunction,
     requestU8ArrBuffer:CallableFunction,
+    getDisplayBuffer:CallableFunction,
 }
 
 export class WasmImport {
@@ -19,6 +20,7 @@ export class WasmImport {
         const createExecutionContext = instance.exports.createExecutionContext as CallableFunction;
         const loadProgramRom = instance.exports.loadProgramRom as CallableFunction;
         const ping = instance.exports.ping as CallableFunction;
+        const getDisplayBuffer = instance.exports.getDisplayBuffer as CallableFunction;
         const requestU8ArrBuffer = instance.exports.requestU8ArrBuffer as CallableFunction;
         const memory = instance.exports.memory as WebAssembly.Memory;
         return {
@@ -28,7 +30,8 @@ export class WasmImport {
             createExecutionContext, 
             loadProgramRom, 
             ping, 
-            requestU8ArrBuffer
+            requestU8ArrBuffer,
+            getDisplayBuffer
         };
     }
 }

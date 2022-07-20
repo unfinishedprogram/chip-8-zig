@@ -2,6 +2,8 @@ const execution_context = @import("execution_context.zig");
 const instructions = @import("instruction.zig");
 const std = @import("std");
 
+const lib = @import("lib.zig");
+
 const dv = @import("dataview.zig");
 
 const Instruction = instructions.Instruction;
@@ -14,10 +16,22 @@ pub fn executeInstruction(ctx:*ExecutionContext, instruction:Instruction) void {
     const d1_2 = @bitCast(dv.D1_2, instruction.data);
     const d1_3 = @bitCast(dv.D1_3, instruction.data);
 
+    var t:usize = 0;
+
+    while(t < 256) : (t += 1){
+        ctx.display[t] = rng.random().int(u8);
+    }
+
     const reg = &ctx.data_registers;
     switch(instruction.opcode) {
         .@"0NNN" => {}, // Noop
-        .@"00E0" => {}, // Clear Display
+        .@"00E0" => {
+            // var i:usize = 0;
+            // while(i < ctx.display.len) : (i+=1){
+            //     // ctx.display[i] = 0x00;
+            //     ctx.display[i] = @intCast(u8, i);
+            // }
+        }, // Clear Display
         .@"00EE" => ctx.program_counter = ctx.stack.pop() - 2, // Returns from subroutine
         .@"1NNN" => ctx.program_counter = d1_3.b - 2,
         .@"2NNN" => { // Calls subroutine at NNN
