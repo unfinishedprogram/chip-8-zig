@@ -1,6 +1,10 @@
+import { U8ArrayPointer } from "./pointers";
+
 export default class Keyboard {
     public readonly elm = document.createElement('div');
     private keyStates:boolean[] = [];
+    private ptr:U8ArrayPointer;
+
     private static readonly keys = [
         '1', '2', '3', 'C',
         '4', '5', '6', 'D',
@@ -19,14 +23,29 @@ export default class Keyboard {
         keyElm.classList.add('key');
         keyElm.innerText = key;
 
-        keyElm.onmousedown = () => this.keyStates[i] = true;            
-        keyElm.onmouseleave = () => this.keyStates[i] = false;
-        keyElm.onmouseup = () => this.keyStates[i] = false;
+        keyElm.onmousedown = () => this.setKey(i, true);            
+        keyElm.onmouseleave = () => this.setKey(i, false);
+        keyElm.onmouseup = () => this.setKey(i, false);
 
         this.elm.appendChild(keyElm);
     }
 
+    private setKey(i:number, value:boolean) {
+        const dv = new DataView(this.ptr.arr);
+        let mask = 1 << i;
+
+        if(value) {
+            dv.setUint16(0, dv.getUint16(0) | mask);
+        } else {
+            dv.setUint16(0, dv.getUint16(0) & ~mask);
+        }
+    }
+
     public getKeyState(key:number):boolean {
         return Boolean(this.keyStates[key]);
+    }
+
+    public setKeyboardPtr(ptr: U8ArrayPointer) {
+        this.ptr = ptr;
     }
 }

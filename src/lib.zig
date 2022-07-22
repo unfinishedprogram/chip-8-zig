@@ -19,7 +19,6 @@ pub extern fn jslog(message: [*]const u8, length: u8) void;
 pub extern fn jslogNum(number:i32) void;
 
 export fn loadProgramRom(self: *ExecutionContext, program: [*]const u8, size:i32) void {
-    // jslogNum(num);
     ExecutionContext.loadProgramRom(self, program, size);
 }
 
@@ -47,4 +46,8 @@ pub export fn requestU8ArrBuffer(size:usize) usize {
 
 export fn getDisplayBuffer(self: *ExecutionContext) *[256]u8 {
     return &self.display;
+}
+
+export fn getKeyboardBuffer(self: *ExecutionContext) *[2]u8 {
+    return &self.keyboard;
 }

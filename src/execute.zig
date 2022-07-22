@@ -82,8 +82,16 @@ pub fn executeInstruction(ctx:*ExecutionContext, instruction:Instruction) void {
         .@"BNNN" => ctx.program_counter = ctx.i + reg[0x0] - 1, // Minus one because we always increment
         .@"CXNN" => reg[d1_2.b] = rng.random().int(u8) & d1_2.c, // Random
         .@"DXYN" => {}, // Draw Sprite
-        .@"EX9E" => {}, // Keyboard
-        .@"EXA1" => {}, // Keyboard
+        .@"EX9E" => {
+            // Skip next instruction if key with the value of Vx is pressed.
+            // Checks the keyboard, and if the key corresponding to the value of Vx 
+            // is currently in the down position, PC is increased by 2.
+        },
+        .@"EXA1" => {
+            // Skip next instruction if key with the value of Vx is not pressed.
+            // Checks the keyboard, and if the key corresponding to the value of Vx 
+            // is currently in the up position, PC is increased by 2.
+        },
         .@"FX07" => reg[d1.b] = ctx.delay_timer,
         .@"FX0A" => {}, // Keyboard
         .@"FX15" => ctx.delay_timer = reg[d1.b],

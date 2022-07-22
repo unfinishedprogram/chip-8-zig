@@ -36,6 +36,7 @@ pub const ExecutionContext = struct {
     address_register: u12 = 0,
     data_registers: [16]u8 = undefined,
     display: [256]u8 = undefined,
+    keyboard: [2]u8 = undefined,
     sound_timer: u8 = 0,
     delay_timer: u8 = 0,
     program_counter: u16 = 0x200,

@@ -18,7 +18,11 @@ const chip8WasmExports = {
 
     getDisplayBuffer:(getDisplayBuffer, ctx:WasmContext<any, any>) => (execution_ptr:number) => {
         return new U8ArrayPointer(ctx, getDisplayBuffer(execution_ptr), 256);
-    }, 
+    },
+    
+    getKeyboardBuffer:(getKeyboardBuffer, ctx:WasmContext<any, any>) => (execution_ptr:number) => {
+        return new U8ArrayPointer(ctx, getKeyboardBuffer(execution_ptr), 2);
+    }
 }
 
 export type Chip8Instance = Required<WasmContext<typeof chip8WasmExports, {}>>;

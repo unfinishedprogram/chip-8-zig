@@ -10,9 +10,10 @@ document.body.appendChild(keyboard.elm);
 
 chip8.then(chip8 => {
     const execution_ptr = chip8.functions.createExecutionContext();
-    const display_buffer = chip8.functions.getDisplayBuffer(execution_ptr)
+    const display_buffer = chip8.functions.getDisplayBuffer(execution_ptr);
+    const keyboard_buffer = chip8.functions.getKeyboardBuffer(execution_ptr);
     display.setBuffer(display_buffer);
-    console.log(display_buffer)
+    keyboard.setKeyboardPtr(keyboard_buffer);
     initRomPicker(chip8, execution_ptr);
 })
 
