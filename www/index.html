@@ -1,16 +1,11 @@
 <!DOCTYPE html>
 <html>
-    <head><title>WASM Test</title></head>
+    <head>
+        <title>Chip-8 ZIG</title>
+        <link rel="stylesheet" href="style.css">
+        <script src="src/index.ts" type="module" defer></script>
+    </head>
     <body>
-        <script src="index.ts" type="module" defer></script>
         <input id="rom_picker" type="file" accept=".rom">
     </body>
-    <style>
-        canvas {
-            display:block;
-            width: 640px;
-            height: 320px;
-            image-rendering:pixelated;
-        }
-    </style>
 </html>

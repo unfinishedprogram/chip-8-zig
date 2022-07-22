@@ -1,8 +1,12 @@
 import chip8, { Chip8Instance } from "./chip8Instance";
 import Display from "./display";
+import Keyboard from "./keyboard";
 
 const display = new Display();
 document.body.appendChild(display.canvas);
+
+const keyboard = new Keyboard();
+document.body.appendChild(keyboard.elm);
 
 chip8.then(chip8 => {
     const execution_ptr = chip8.functions.createExecutionContext();

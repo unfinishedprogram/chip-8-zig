@@ -1,0 +1,18 @@
+canvas {
+    display:block;
+    width: 640px;
+    height: 320px;
+    image-rendering:pixelated;
+}
+
+.keyboard {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    width: fit-content;
+    gap: 0.2rem;
+}
+
+.keyboard > * {
+    width: 2rem;
+    height: 2rem;
+}
