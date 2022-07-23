@@ -29,6 +29,7 @@ export type Chip8Instance = Required<WasmContext<typeof chip8WasmExports, {}>>;
 
 const chip8 = new Promise<Chip8Instance>((res, rej) => {
     const ctx = new WasmContext("build/chip-8.wasm", chip8WasmExports, {});
+    console.log(ctx);
     ctx.loadWasm().then(() => res(ctx as Chip8Instance));
 })
 

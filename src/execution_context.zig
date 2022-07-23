@@ -2,8 +2,7 @@ const std = @import("std");
 const print = std.debug.print;
 const allocator = @import("allocator.zig").allocator;
 
-const jslog = @import("lib.zig").jslog;
-const jslogNum = @import("lib.zig").jslogNum;
+const lib = @import("lib.zig");
 const requestU8ArrBuffer = @import("lib.zig").requestU8ArrBuffer;
 const setDisplayBuffer = @import("lib.zig").setDisplayBuffer;
 
@@ -36,7 +35,7 @@ pub const ExecutionContext = struct {
     address_register: u12 = 0,
     data_registers: [16]u8 = undefined,
     display: [256]u8 = undefined,
-    keyboard: [2]u8 = undefined,
+    keyboard: u16 = 0,
     sound_timer: u8 = 0,
     delay_timer: u8 = 0,
     program_counter: u16 = 0x200,
@@ -44,7 +43,7 @@ pub const ExecutionContext = struct {
     i:u12 = 0,
 
     pub fn loadProgramRom(self: *ExecutionContext, program: [*]const u8, size:i32) void {
-        jslog("load rom", 8);
+        lib.jsLog("load rom");
 
         var i:usize = 0;
         
@@ -52,12 +51,12 @@ pub const ExecutionContext = struct {
             self.system_memory[i + 0x200 ] = program[i];
         }
 
-        jslog("done rom", 8);
+        lib.jsLog("done rom");
     }
     
     pub fn step(self: *ExecutionContext) void {
-        jslog("step", 4);
-        jslogNum(@intCast(i32, self.program_counter));
+        lib.jsLog("step");
+        lib.jsLog(@intCast(i32, self.program_counter));
 
         const instruction = createInstruction(.{
             self.system_memory[self.program_counter], 
@@ -69,7 +68,7 @@ pub const ExecutionContext = struct {
 };
 
 pub fn createExecutionContext() *ExecutionContext {
-    jslog("make ctx", 8);
+    lib.jsLog("make ctx");
     const ptr = allocator.create(ExecutionContext) catch @panic("alloc err");
     ptr.* = ExecutionContext{};
     return ptr;

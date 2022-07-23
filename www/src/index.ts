@@ -32,20 +32,28 @@ function initRomPicker(ctx:Chip8Instance, execution_ptr:number) {
 
             ctx.functions.loadProgramRom(execution_ptr, buffer.ptr, buffer.size);
 
-            let i = 512;
-            let int = 0;
+            let pc = 0;
 
-            int = setInterval(() => {
-                ctx.functions.step(execution_ptr);
-                display.update();
-                i--;
-                if(i <= 0){
-                    clearInterval(int);
+            const step = () => {
+                pc++;
+                if(pc % 100 == 0){
+                    console.log(pc);
                 }
-            }, 100)
-        
+                ctx.functions.step(execution_ptr);
+            }
+            // document.addEventListener("keypress", () => {
+            //     step();
+            // })
+            // const t = performance.now();
+            // for(let i = 0; i < 100000; i++){
+            //     step();
+            // }
+            // console.log("TIME:", performance.now()-t);
+            setInterval(() => {
+                step();
+                display.update();
+            }, 250)
         }
-
         reader.readAsArrayBuffer(file);
     }
 }

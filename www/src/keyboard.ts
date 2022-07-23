@@ -31,7 +31,7 @@ export default class Keyboard {
     }
 
     private setKey(i:number, value:boolean) {
-        const dv = new DataView(this.ptr.arr);
+        const dv = new DataView(this.ptr.arr.buffer);
         let mask = 1 << i;
 
         if(value) {

@@ -4,7 +4,7 @@
 const decoder = new TextDecoder();
 
 const DEFAULT_IMPORTS:ImportedFunctionFactories = {
-    jslog: (ctx:WasmContext<any, any>) => function (str_ptr:number, size:number) {
+    jslogStr: (ctx:WasmContext<any, any>) => function (str_ptr:number, size:number) {
         const buffer = new Uint8Array(ctx.memory!.buffer, str_ptr, size);
         const string = decoder.decode(buffer);
         console.log(string);

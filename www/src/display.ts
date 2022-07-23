@@ -1,4 +1,5 @@
 import { U8ArrayPointer } from "./pointers";
+let c = 0xFF
 
 export default class Display {
     public canvas:HTMLCanvasElement = document.createElement("canvas");
@@ -16,18 +17,19 @@ export default class Display {
 
     setBuffer(buffer:U8ArrayPointer) {
         this.buffer = buffer;
+        this.buffer.arr.fill(0);
     }
 
     update() {
-        console.log("updating");
         const arr = this.buffer?.arr!;
         for(let i = 0; i < arr.length; i++){
             const imgIndex = i * 8;
             const bits = arr[i].toString(2).padStart(8, "0").split("");
             for(let j = 0; j < 8; j++){
-                const black = bits.pop() == "1" ? 0 : 255;
+                const black = bits.pop() == "1" ? 0 : c;
                 this.img.data[(imgIndex + j) * 4 + 3] = black;
             }
+            c = c == 0xFF ? 0xAA : 0xFF;
         }
         this.ctx.putImageData(this.img, 0, 0);
     }
