@@ -65,14 +65,14 @@ pub const ExecutionContext = struct {
 
         executeInstruction(self, instruction);
     }
-};
 
-pub fn createExecutionContext() *ExecutionContext {
-    lib.jsLog("make ctx");
-    const ptr = allocator.create(ExecutionContext) catch @panic("alloc err");
-    ptr.* = ExecutionContext{};
-    return ptr;
-}
+    pub fn create() *ExecutionContext {
+        lib.jsLog("make ctx");
+        const ptr = allocator.create(ExecutionContext) catch @panic("alloc err");
+        ptr.* = ExecutionContext{};
+        return ptr;
+    }
+};
 
 test "stack datastructure" {
     var myStack = Stack{};

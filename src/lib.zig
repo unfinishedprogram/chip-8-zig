@@ -41,8 +41,7 @@ export fn step(self: *ExecutionContext) void {
 }
 
 export fn createExecutionContext() *ExecutionContext {
-    const ctx = ec.createExecutionContext();
-    return ctx;
+    return ExecutionContext.create();
 }
 
 export fn ping(num:i32) void {
