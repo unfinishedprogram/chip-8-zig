@@ -22,6 +22,13 @@ const chip8WasmExports = {
     
     getKeyboardBuffer:(getKeyboardBuffer, ctx:WasmContext<any, any>) => (execution_ptr:number) => {
         return new U8ArrayPointer(ctx, getKeyboardBuffer(execution_ptr), 2);
+    },
+
+    getMemoryBuffer:(getMemoryBuffer, ctx:WasmContext<any, any>) => (execution_ptr:number) => {
+        return new U8ArrayPointer(ctx, getMemoryBuffer(execution_ptr), 4096);
+    },
+    timerFire:(timerFire, ctx:WasmContext<any, any>) => (execution_ptr:number) => {
+        timerFire(execution_ptr);
     }
 }
 

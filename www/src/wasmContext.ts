@@ -11,7 +11,7 @@ const DEFAULT_IMPORTS:ImportedFunctionFactories = {
     },
 
     jslogNum: (ctx:WasmContext<any, any>) => function (num:number) {
-        console.log(num);
+        console.log(num.toString(16));
     }
 }
 

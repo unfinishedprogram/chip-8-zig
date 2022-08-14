@@ -29,7 +29,7 @@ export default class Display {
                 const black = bits.pop() == "1" ? 0 : c;
                 this.img.data[(imgIndex + j) * 4 + 3] = black;
             }
-            c = c == 0xFF ? 0xAA : 0xFF;
+            //c = c == 0xFF ? 0xAA : 0xFF;
         }
         this.ctx.putImageData(this.img, 0, 0);
     }

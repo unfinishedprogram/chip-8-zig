@@ -12,12 +12,13 @@ pub const Opcode = enum {
     @"EX9E", @"EXA1", @"FX07", @"FX0A", 
     @"FX15", @"FX18", @"FX1E", @"FX29", 
     @"FX33", @"FX55", @"FX65",
+    ERROR
 };
 
 
 pub fn getOpcode(code:u16) Opcode {
     const bytes = @bitCast(dataviews.D1, code);
-
+    
     return switch (bytes.a) {
         0x0 => switch(code) {
             0x00e0 => Opcode.@"00E0",
@@ -40,8 +41,8 @@ pub fn getOpcode(code:u16) Opcode {
             0x5 => Opcode.@"8XY5",
             0x6 => Opcode.@"8XY6",
             0x7 => Opcode.@"8XY7",
-            0xe=>Opcode.@"8XYE",
-            else => unreachable,
+            0xe => Opcode.@"8XYE",
+            else => Opcode.ERROR,
         },
         0x9 => Opcode.@"9XY0",
         0xa => Opcode.@"ANNN",
@@ -51,25 +52,25 @@ pub fn getOpcode(code:u16) Opcode {
         0xe => switch(bytes.d) {
             0x1 => Opcode.@"EXA1",
             0xe => Opcode.@"EX9E",
-            else => unreachable,
+            else => Opcode.ERROR,
         },
         0xf => switch(bytes.c) {
             0x0 => switch(bytes.d) {
                 0x7 => Opcode.@"FX07",
                 0xa => Opcode.@"FX0A",
-                else => unreachable,
+                else => Opcode.ERROR,
             },
             0x1 => switch(bytes.d) {
                 0x5 => Opcode.@"FX15",
                 0x8 => Opcode.@"FX18",
                 0xe => Opcode.@"FX1E",
-                else => unreachable,
+                else => Opcode.ERROR,
             },
             0x2 => Opcode.@"FX29",
             0x3 => Opcode.@"FX33",
             0x5 => Opcode.@"FX55",
             0x6 => Opcode.@"FX65",
-            else => unreachable,
+            else => Opcode.ERROR,
         },
     };
 }

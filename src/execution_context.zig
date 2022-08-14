@@ -3,8 +3,8 @@ const print = std.debug.print;
 const allocator = @import("allocator.zig").allocator;
 
 const lib = @import("lib.zig");
-const requestU8ArrBuffer = @import("lib.zig").requestU8ArrBuffer;
-const setDisplayBuffer = @import("lib.zig").setDisplayBuffer;
+const requestU8ArrBuffer = lib.requestU8ArrBuffer;
+const setDisplayBuffer = lib.setDisplayBuffer;
 
 const instructions = @import("instruction.zig");
 const Instruction = instructions.Instruction;
@@ -14,8 +14,26 @@ const createInstruction = instructions.createInstruction;
 const executeInstruction = @import("execute.zig").executeInstruction;
 const expectEqual = std.testing.expectEqual;
 
-pub const Stack = struct {
+const font_set:[80]u8 = .{ 
+    0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
+    0x20, 0x60, 0x20, 0x20, 0x70, // 1
+    0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
+    0xF0, 0x10, 0xF0, 0x10, 0xF0, // 3
+    0x90, 0x90, 0xF0, 0x10, 0x10, // 4
+    0xF0, 0x80, 0xF0, 0x10, 0xF0, // 5
+    0xF0, 0x80, 0xF0, 0x90, 0xF0, // 6
+    0xF0, 0x10, 0x20, 0x40, 0x40, // 7
+    0xF0, 0x90, 0xF0, 0x90, 0xF0, // 8
+    0xF0, 0x90, 0xF0, 0x10, 0xF0, // 9
+    0xF0, 0x90, 0xF0, 0x90, 0x90, // A
+    0xE0, 0x90, 0xE0, 0x90, 0xE0, // B
+    0xF0, 0x80, 0x80, 0x80, 0xF0, // C
+    0xE0, 0x90, 0x90, 0x90, 0xE0, // D
+    0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
+    0xF0, 0x80, 0xF0, 0x80, 0x80  // F
+};
 
+pub const Stack = struct {
     buffer:[12] u16 = undefined,
     counter: u16 = 0,
 
@@ -31,7 +49,8 @@ pub const Stack = struct {
 };
 
 pub const ExecutionContext = struct {
-    system_memory:[4096]u8 = undefined, // Program is loaded after the frist 512 bytes
+    // last_60hz_cycle: u64 = 0,
+    system_memory: [4096]u8 = undefined, // Program is loaded after the frist 512 bytes
     address_register: u12 = 0,
     data_registers: [16]u8 = undefined,
     display: [256]u8 = undefined,
@@ -42,7 +61,7 @@ pub const ExecutionContext = struct {
     stack:Stack = Stack{},
     i:u12 = 0,
 
-    pub fn loadProgramRom(self: *ExecutionContext, program: [*]const u8, size:i32) void {
+    pub fn loadProgramRom(self: *ExecutionContext, program: [*]const u8, size:usize) void {
         lib.jsLog("load rom");
 
         var i:usize = 0;
@@ -53,11 +72,14 @@ pub const ExecutionContext = struct {
 
         lib.jsLog("done rom");
     }
+
+    pub fn setFontSet(self: *ExecutionContext) void {
+        for(font_set) | value, i | {
+            self.system_memory[0x050 + i] = value;
+        }
+    }
     
     pub fn step(self: *ExecutionContext) void {
-        lib.jsLog("step");
-        lib.jsLog(@intCast(i32, self.program_counter));
-
         const instruction = createInstruction(.{
             self.system_memory[self.program_counter], 
             self.system_memory[self.program_counter+1]
@@ -70,16 +92,7 @@ pub const ExecutionContext = struct {
         lib.jsLog("make ctx");
         const ptr = allocator.create(ExecutionContext) catch @panic("alloc err");
         ptr.* = ExecutionContext{};
+        setFontSet(ptr);
         return ptr;
     }
 };
-
-test "stack datastructure" {
-    var myStack = Stack{};
-    myStack.push(5);
-    myStack.push(7);
-    myStack.push(8);
-    try expectEqual(@as(u12, 8), myStack.pop());
-    try expectEqual(@as(u12, 7), myStack.pop());
-    try expectEqual(@as(u12, 5), myStack.pop());
-}

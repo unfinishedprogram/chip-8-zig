@@ -1,6 +1,7 @@
 import chip8, { Chip8Instance } from "./chip8Instance";
 import Display from "./display";
 import Keyboard from "./keyboard";
+import { U8ArrayPointer } from "./pointers";
 
 const display = new Display();
 document.body.appendChild(display.canvas);
@@ -12,6 +13,7 @@ chip8.then(chip8 => {
     const execution_ptr = chip8.functions.createExecutionContext();
     const display_buffer = chip8.functions.getDisplayBuffer(execution_ptr);
     const keyboard_buffer = chip8.functions.getKeyboardBuffer(execution_ptr);
+
     display.setBuffer(display_buffer);
     keyboard.setKeyboardPtr(keyboard_buffer);
     initRomPicker(chip8, execution_ptr);
@@ -26,33 +28,25 @@ function initRomPicker(ctx:Chip8Instance, execution_ptr:number) {
 
         reader.onload = () => {
             const fileData = new Uint8Array(reader.result as ArrayBuffer);
-            const buffer = ctx.functions.requestU8ArrBuffer(512);
-            console.log(buffer);
-            buffer.arr.set(fileData);
 
-            ctx.functions.loadProgramRom(execution_ptr, buffer.ptr, buffer.size);
+            console.log("FileSize", fileData.length);
 
-            let pc = 0;
+            const buffer = ctx.functions.getMemoryBuffer(execution_ptr);
+            const rom = new U8ArrayPointer(ctx as any, buffer.ptr+512, 4096-512);
+            rom.arr.set(fileData);
 
             const step = () => {
-                pc++;
-                if(pc % 100 == 0){
-                    console.log(pc);
-                }
                 ctx.functions.step(execution_ptr);
             }
-            // document.addEventListener("keypress", () => {
-            //     step();
-            // })
-            // const t = performance.now();
-            // for(let i = 0; i < 100000; i++){
-            //     step();
-            // }
-            // console.log("TIME:", performance.now()-t);
-            setInterval(() => {
+            
+            const interval = setInterval(() => {
                 step();
+            }, 2)
+
+            const timers = setInterval(() => {
                 display.update();
-            }, 250)
+                ctx.functions.timerFire(execution_ptr);
+            }, 16)
         }
         reader.readAsArrayBuffer(file);
     }
